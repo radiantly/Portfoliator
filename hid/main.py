@@ -70,14 +70,18 @@ class Keyboard:
                     sleep(delay)
         sleep(self.execDelay)
 
-    def sendCombo(self, *args):
+    def sendCombo(self, *args, **kwargs):
         mod = 0
+        if "mod" in kwargs and kwargs["mod"]:
+            if isinstance(kwargs["mod"], list):
+                for modkey in kwargs["mod"]:
+                    mod |= modkey
+            else:
+                mod = kwargs["mod"]
+
         keys = []
         for arg in args:
-            if isinstance(arg, int):
-                mod |= arg
-            elif isinstance(arg, str):
-                keys += [self.convert(c)[0] for c in arg]
+            keys += [arg] if isinstance(arg, int) else [self.convert(c)[0] for c in arg]
 
         byteseq = bytes([mod, 0] + keys[:6]).ljust(8, b"\x00")
 

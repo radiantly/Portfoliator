@@ -1,8 +1,8 @@
 CTRL, SHIFT, ALT, META = [1 << i for i in range(4)]
 ENTER = 0x28
-
+TAB = 0x2B
 LEFT = 0x50
-DOWN =  0x51
+DOWN = 0x51
 UP = 0x52
 RIGHT = 0x4F
 
