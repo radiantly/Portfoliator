@@ -39,11 +39,10 @@ shiftedKeyCodeMap = {
     "<": 0x36,
     ">": 0x37,
     "?": 0x38,
-
-
-
-
 }
+
+CTRL, SHIFT, ALT, META = [1 << i for i in range(4)]
+ENTER = 0x28
 
 def convert(c):
     # Lower case letters
@@ -66,12 +65,39 @@ def convert(c):
 
     return 0, False
 
-def sendkeys(text):
-    with open("/dev/hidg0", "wb+") as f:
-        for c in text:
-            code, shifted = convert(c)
-            byteseq = bytes([2 if shifted else 0, 0, code, 0, 0, 0, 0, 0])
-            f.write(byteseq)
-            f.write(b"\x00" * 8)
+def sendKeys(*args):
+    for arg in args:
+        with open("/dev/hidg0", "wb+") as f:
+            if isinstance(arg, str):
+                for c in arg:
+                    code, shifted = convert(c)
+                    byteseq = bytes([2 if shifted else 0, 0, code, 0, 0, 0, 0, 0])
+                    f.write(byteseq)
+                    f.write(b"\x00" * 8)
+            elif isinstance(arg, int):
+                byteseq = bytes([0, 0, arg]).ljust(8, b"\x00")
+                f.write(byteseq)
+                f.write(b"\x00" * 8)
 
-sendkeys("Hello World! 012345")
+
+def sendCombo(*args):
+    mod = 0
+    keys = []
+    for arg in args:
+        if isinstance(arg, int):
+            mod |= arg
+        elif isinstance(arg, str):
+            keys += [convert(c)[0] for c in arg]
+    
+    byteseq = bytes([mod, 0] + keys[:6]).ljust(8, b"\x00")
+    
+    with open("/dev/hidg0", "wb+") as f:
+        f.write(byteseq)
+        f.write(b"\x00" * 8)
+
+
+sendCombo(META, "r")
+sleep(1)
+sendKeys("notepad", ENTER)
+sleep(1)
+sendKeys("Hello World! 012345: This is a tilde (~)")
