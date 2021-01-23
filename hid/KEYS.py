@@ -1,6 +1,11 @@
 CTRL, SHIFT, ALT, META = [1 << i for i in range(4)]
 ENTER = 0x28
 
+LEFT = 0x50
+DOWN =  0x51
+UP = 0x52
+RIGHT = 0x4F
+
 keycodeMap = {
     " ": 0x2C,
     "0": 0x27,
