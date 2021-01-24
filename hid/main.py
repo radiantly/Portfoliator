@@ -84,7 +84,6 @@ class Keyboard:
             keys += [arg] if isinstance(arg, int) else [self.convert(c)[0] for c in arg]
 
         byteseq = bytes([mod, 0] + keys[:6]).ljust(8, b"\x00")
-
         with open("/dev/hidg0", "wb+") as f:
             f.write(byteseq)
             f.write(b"\x00" * 8)
